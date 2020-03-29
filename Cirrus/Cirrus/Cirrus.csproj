@@ -42,7 +42,10 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Cirrus\Component.cs" />
+    <Compile Include="Cirrus\Helpers\Drawing.cs" />
     <Compile Include="Cirrus\Scenes\Scene.cs" />
+    <Compile Include="Cirrus\TestCom.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

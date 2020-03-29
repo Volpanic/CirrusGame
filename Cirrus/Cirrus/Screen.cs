@@ -7,8 +7,8 @@ namespace Cirrus
     public class Screen
     {
         //Statics
-        public const int GameWidth = 320;
-        public const int GameHeight = 180;
+        public const int GameWidth = 256;
+        public const int GameHeight = 224;
         public static int GameZoom = 4;
         //Statics
 

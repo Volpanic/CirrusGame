@@ -1,4 +1,5 @@
-﻿using Cirrus.Cirrus.Scenes;
+﻿using Cirrus.Cirrus;
+using Cirrus.Cirrus.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,6 +17,7 @@ namespace Cirrus
         public Scene CurrentScene;
 
         public Texture2D Dummy;
+        public TestCom anim;
 
         //RenderTargets
         RenderTarget2D ApplicationSurface;
@@ -36,13 +38,14 @@ namespace Cirrus
             //Init Surfaces
             ApplicationSurface = new RenderTarget2D(GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
             GuiSurface = new RenderTarget2D(GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
-
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Dummy = Content.Load<Texture2D>("Sprites/spr_cursor");
+            Dummy = Content.Load<Texture2D>("Sprites/spr_testAnim");
+
+            
         }
 
         protected override void UnloadContent()
@@ -64,6 +67,11 @@ namespace Cirrus
         {
             GraphicsDevice.Clear(Color.Black);
 
+            if(anim == null)
+            {
+                anim = new TestCom(Dummy);
+            }
+
             //Regular Draw
             GraphicsDevice.SetRenderTarget(ApplicationSurface);
             spriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.AlphaBlend,SamplerState.PointClamp);
@@ -71,7 +79,7 @@ namespace Cirrus
             //Clear
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Draw(Dummy,Screen.GetMousePos(),new Rectangle(0,0,16,16),Color.White);
+            anim.Draw(spriteBatch,gameTime);
 
             spriteBatch.End();
 
