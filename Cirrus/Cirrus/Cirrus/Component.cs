@@ -35,6 +35,8 @@ namespace Cirrus.Cirrus
 
         public void DrawSelf(SpriteBatch spriteBatch) //AutoDrawing
         {
+            if (Sprite == null) return;
+
             Rectangle spriteRect = new Rectangle(0,0, SpriteWidth, SpriteHeight);
 
             if (Sprite.Width != SpriteWidth)

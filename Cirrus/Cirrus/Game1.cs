@@ -1,4 +1,5 @@
 ﻿using Cirrus.Cirrus;
+using Cirrus.Cirrus.Helpers;
 using Cirrus.Cirrus.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +17,6 @@ namespace Cirrus
         private Scene runningScene;
         public Scene CurrentScene;
 
-        public Texture2D Dummy;
         public TestCom anim;
 
         //RenderTargets
@@ -43,14 +43,14 @@ namespace Cirrus
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Dummy = Content.Load<Texture2D>("Sprites/spr_testAnim");
 
-            
+            Sprites.Init(Content);
+
         }
 
         protected override void UnloadContent()
         {
-            Dummy.Dispose();
+            Sprites.Unload(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -69,7 +69,7 @@ namespace Cirrus
 
             if(anim == null)
             {
-                anim = new TestCom(Dummy);
+                anim = new TestCom(Sprites.GetSprite("spr_testAnim"));
             }
 
             //Regular Draw
