@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ImGui.NET": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\ryan6\\source\\repos\\Cirrus"
+    }
+  }
+}
