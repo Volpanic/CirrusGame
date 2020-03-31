@@ -10,6 +10,13 @@ namespace Cirrus.Cirrus.Scenes
 {
     public abstract class Scene
     {
+        public Game baseGame;
+
+        public Scene(Game _game)
+        {
+            baseGame = _game;
+        }
+
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
         public abstract void DrawGui(SpriteBatch spriteBatch, GameTime gameTime);

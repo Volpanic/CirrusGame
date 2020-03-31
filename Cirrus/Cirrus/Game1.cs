@@ -29,6 +29,7 @@ namespace Cirrus
             Content.RootDirectory = "Content";
 
             screen = new Screen(graphics);
+
         }
 
         protected override void Initialize()
@@ -46,6 +47,8 @@ namespace Cirrus
 
             Sprites.Init(Content);
 
+
+            runningScene = new LevelScene(this);
         }
 
         protected override void UnloadContent()
@@ -58,7 +61,7 @@ namespace Cirrus
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            
+            runningScene.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -77,9 +80,9 @@ namespace Cirrus
             spriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.AlphaBlend,SamplerState.PointClamp);
 
             //Clear
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.DarkGray);
 
-            anim.Draw(spriteBatch,gameTime);
+            runningScene.Draw(spriteBatch,gameTime);
 
             spriteBatch.End();
 

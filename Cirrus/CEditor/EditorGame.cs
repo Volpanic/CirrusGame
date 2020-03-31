@@ -4,12 +4,10 @@ using System;
 using System.IO;
 using Num = System.Numerics;
 using ImGuiNET;
+using Editor.EditorMenus;
 
 namespace CEditor
 {
-    /// <summary>
-    /// Simple FNA + ImGui example
-    /// </summary>
     public class EditorGame : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -18,11 +16,15 @@ namespace CEditor
         private Texture2D _xnaTexture;
         private IntPtr _imGuiTexture;
 
+        public EditorMenu CurrentRunningMenu;
+
         public EditorGame()
         {
+            Window.AllowUserResizing = true ;
+
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1024;
-            _graphics.PreferredBackBufferHeight = 768;
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 720;
             _graphics.PreferMultiSampling = true;
 
             IsMouseVisible = true;
@@ -32,6 +34,8 @@ namespace CEditor
         {
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
+
+            CurrentRunningMenu = new LevelEditor(_imGuiRenderer,Window);
 
             base.Initialize();
         }
@@ -61,7 +65,7 @@ namespace CEditor
             _imGuiRenderer.BeforeLayout(gameTime);
 
             // Draw our UI
-            ImGuiLayout();
+            CurrentRunningMenu.ImGuiLayout();
 
             // Call AfterLayout now to finish up and draw all the things
             _imGuiRenderer.AfterLayout();
@@ -81,13 +85,21 @@ namespace CEditor
 
         protected virtual void ImGuiLayout()
         {
+            ImGui.BeginMainMenuBar();
+
+            ImGui.EndMainMenuBar();
+            
             {
-                ImGui.Text("Base");
+                ImGui.Begin("Base Editor");
+
                 ImGui.Button("Level Editor");
-                ImGui.Button("Tile Editor");
+                ImGui.Button("AutoTile Editor");
                 ImGui.Button("Event  Editor");
-                ImGui.SliderAngle("EPic SLider",ref r);
+                ImGui.Separator();
+
+                ImGui.End();
             }
+
 
             //// 1. Show a simple window
             //// Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
