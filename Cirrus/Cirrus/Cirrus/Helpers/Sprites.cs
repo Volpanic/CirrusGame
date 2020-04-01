@@ -21,12 +21,11 @@ namespace Cirrus.Cirrus.Helpers
 
             foreach(string name in f)
             {
-                Debug.Print(name);
                 if (Path.GetExtension(name) == ".xnb")
                 {
                     Texture2D tex = _content.Load<Texture2D>(Path.Combine("Sprites", Path.GetFileNameWithoutExtension(name)));
                     SpriteList.Add(Path.GetFileNameWithoutExtension(name),tex);
-                    
+                    Console.WriteLine(Path.GetFileNameWithoutExtension(name));
                 }
             }
         }

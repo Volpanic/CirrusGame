@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Cirrus\Cirrus.csproj" />
         <ProjectReference Include="..\ImGui.NET\ImGui.NET.csproj" />
     </ItemGroup>
 

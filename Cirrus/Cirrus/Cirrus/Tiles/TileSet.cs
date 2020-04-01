@@ -8,14 +8,44 @@ using System.Threading.Tasks;
 
 namespace Cirrus.Cirrus.Tiles
 {
+    public struct TilesetWorldLayer
+    {
+        public TileSet tileSet;
+        public bool Visible;
+        public bool Locked;
+        public string Name;
+
+        public TilesetWorldLayer(TileSet _tle, string _name)
+        {
+            Visible = true;
+            Locked = false;
+            tileSet = _tle;
+            Name = _name;
+        }
+
+        public TilesetWorldLayer(TileSet _tle, string _name, bool _vis)
+        {
+            Visible = _vis;
+            Locked = false;
+            tileSet = _tle;
+            Name = _name;
+        }
+
+        public TilesetWorldLayer(TileSet _tle, string _name, bool _vis,bool _lock)
+        {
+            Visible = _vis;
+            Locked = _lock;
+            tileSet = _tle;
+            Name = _name;
+        }
+    }
+
     public abstract class TileSet
     {
         public Texture2D TileSetTexture;
         public int TileWidth = 16;
         public int TileHeight = 16;
         public float Depth = 0;
-
-        public bool Visable = true;
 
         public Point[,] TileGridArray;
 

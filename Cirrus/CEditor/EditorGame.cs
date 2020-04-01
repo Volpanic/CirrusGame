@@ -5,12 +5,15 @@ using System.IO;
 using Num = System.Numerics;
 using ImGuiNET;
 using Editor.EditorMenus;
+using Cirrus.Cirrus.Helpers;
+using Cirrus;
 
 namespace CEditor
 {
     public class EditorGame : Game
     {
         private GraphicsDeviceManager _graphics;
+        SpriteBatch spriteBatch;
         private ImGuiRenderer _imGuiRenderer;
 
         private Texture2D _xnaTexture;
@@ -32,10 +35,21 @@ namespace CEditor
 
         protected override void Initialize()
         {
+
+            string basePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+
+            //basePath = Path.GetFullPath(Path.Combine(basePath,@"..\..\"));
+            //basePath = Path.Combine(basePath,"Cirrus", "Cirrus", "Content");
+            //Content.RootDirectory = "C:\\Users\\ryan6\\source\\repos\\Cirrus\\Cirrus\\Cirrus\\Content";
+            Content.RootDirectory = @"C:\Users\ryan6\source\repos\Cirrus\Cirrus\Cirrus\bin\DesktopGL\AnyCPU\Debug\Content";
+
+            Sprites.Init(Content);
+
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
-            CurrentRunningMenu = new LevelEditor(_imGuiRenderer,Window);
+            CurrentRunningMenu = new LevelEditor(_imGuiRenderer,this);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
             base.Initialize();
         }
@@ -64,6 +78,7 @@ namespace CEditor
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
 
+            CurrentRunningMenu.Draw(spriteBatch,gameTime);
             // Draw our UI
             CurrentRunningMenu.ImGuiLayout();
 

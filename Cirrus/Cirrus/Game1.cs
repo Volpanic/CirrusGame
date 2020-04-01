@@ -47,7 +47,6 @@ namespace Cirrus
 
             Sprites.Init(Content);
 
-
             runningScene = new LevelScene(this);
         }
 
@@ -77,7 +76,7 @@ namespace Cirrus
 
             //Regular Draw
             GraphicsDevice.SetRenderTarget(ApplicationSurface);
-            spriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.AlphaBlend,SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend,SamplerState.PointClamp);
 
             //Clear
             GraphicsDevice.Clear(Color.DarkGray);
@@ -88,7 +87,7 @@ namespace Cirrus
 
             //Regular Draw
             GraphicsDevice.SetRenderTarget(GuiSurface);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             //Clear
             GraphicsDevice.Clear(Color.Transparent);
