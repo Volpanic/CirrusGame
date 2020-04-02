@@ -49,6 +49,11 @@ namespace Cirrus.Cirrus.Tiles
 
         public Point[,] TileGridArray;
 
+        public TileSet(Point GridSize)
+        {
+            TileGridArray = TileGridFillEmpty(GridSize.X,GridSize.Y);
+        }
+
         /// <summary>
         /// Set the tile pos (x,y in consideration to width and height, i.e the 3rd tile on the first row wound be (2,0))
         /// </summary>
@@ -57,18 +62,15 @@ namespace Cirrus.Cirrus.Tiles
         public void SetGridPosition(Point GridPos,Point TilePos)
         {
             //Within range X check
-            if(GridPos.X < 0 || GridPos.X > TileGridArray.GetLength(0))
+            if(GridPos.X >= 0 && GridPos.X < TileGridArray.GetLength(0))
             {
-                return;
+                if (GridPos.Y >= 0 && GridPos.Y < TileGridArray.GetLength(1))
+                {
+                    TileGridArray[GridPos.X, GridPos.Y] = TilePos;
+                }
             }
 
-            //Within range Y check
-            if (GridPos.Y < 0 || GridPos.Y > TileGridArray.GetLength(1))
-            {
-                return;
-            }
-    
-            TileGridArray[GridPos.X,GridPos.Y] = TilePos;
+            return;
         }
 
         // () in grid pos

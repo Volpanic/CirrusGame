@@ -20,26 +20,42 @@ namespace Editor.EditorMenus
     public class LevelEditor : EditorMenu
     {
         //All
+        public Point MapSize;
+        public string MapName;
+        public Color MapClearCol;
 
         //GameView stuff
         public LevelScene levelScene = new LevelScene(null);
         public RenderTarget2D gameRenderTarget; // Game View
         public RenderTarget2D levelRenderTarget; //Place View
         private IntPtr gameTexture;
-        private float GameZoom = 1;
+        private IntPtr levelTexture;
+        private int GameZoom = 1;
 
         //TileView
         public IntPtr tilePallateTexture;
         public Point tilePallateTextureSize;
         public List<TilesetWorldLayer> TileLayers;
 
-        public LevelEditor(ImGuiRenderer _imgr,Game _gme) : base(_imgr, _gme)
+        public LevelEditor(ImGuiRenderer _imgr, EditorGame _gme, Point _mapSize, string _mapName, Color _mapClearCol) : base(_imgr, _gme)
         {
-            gameRenderTarget = new RenderTarget2D(_gme.GraphicsDevice,Screen.GameWidth,Screen.GameHeight);
-            levelRenderTarget = new RenderTarget2D(_gme.GraphicsDevice, Screen.GameWidth*4, Screen.GameHeight*4);
+            //Map constraints
+            MapSize = _mapSize;
+            MapName = _mapName;
+            MapClearCol = _mapClearCol;
 
-            TileLayers = levelScene.TileSetList;
+            //(So drawing tiles doesnt draw the window)
+            ImGui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
 
+            //Configure layers
+            TileLayers = new List<TilesetWorldLayer>();
+            TileLayers.Add(new TilesetWorldLayer(new CollisionTileSet(MapSize),"Collision",true,false));
+            LayerListPosition = 0;
+
+            //Create rendertargets
+            levelRenderTarget = new RenderTarget2D(_gme.GraphicsDevice, 16 * MapSize.X, 16 * MapSize.Y);
+            gameRenderTarget = new RenderTarget2D(_gme.GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
+            //Set Tile Pallate textures
             tilePallateTexture = _imGuiRenderer.BindTexture(TileLayers[0].tileSet.TileSetTexture);
             tilePallateTextureSize = new Point(TileLayers[0].tileSet.TileSetTexture.Width, TileLayers[0].tileSet.TileSetTexture.Height);
         }
@@ -119,30 +135,46 @@ namespace Editor.EditorMenus
                 ImGui.Begin("Layers");
                 if (ImGui.Button("Add New Layer")) NewLayerWindow = true;
 
+                //Select layer to edit
+                if (ImGui.BeginCombo("Selected Layer", TileLayers[LayerListPosition].Name))
+                {
+                    for (int i = 0; i < TileLayers.Count; i++)
+                    {
+                        bool selected = (LayerListPosition == i);
+                        if (ImGui.Selectable(TileLayers[i].Name, selected))
+                        {
+                            LayerListPosition = i;
+                        }
+
+                        if (selected)
+                        {
+                            ImGui.SetItemDefaultFocus();
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
+
+                ImGui.Separator();
+                ImGui.Text("Layers:");
+
                 ImGui.PushItemWidth(-1);
-                ImGui.ListBoxHeader(" ", TileLayers.Count, 8);
 
                 //Draw List box
                 for (int i = 0; i < TileLayers.Count; i++)
                 {
                     TilesetWorldLayer tswl = TileLayers[i];
 
-                    //Lock Layer
-                    ImGuiSelectableFlags sel = ImGuiSelectableFlags.AllowDoubleClick;
-                    if (tswl.Locked) sel = ImGuiSelectableFlags.Disabled;
-
-                    if(ImGui.Selectable(tswl.Name, i == LayerListPosition, sel, new Num.Vector2(128, 24)))
+                    if(ImGui.TreeNode(tswl.Name))
                     {
-                        LayerListPosition = i;
+                        ImGui.InputText("Name", ref tswl.Name,32,i == 0? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
+                        ImGui.Checkbox("Visible",ref tswl.Visible);
+                        ImGui.Checkbox("Locked", ref tswl.Locked);
+                        ImGui.TreePop();
                     }
+                    
 
-                    ImGui.SameLine(); ImGui.Checkbox("Vis ", ref tswl.Visible);
-                    ImGui.SameLine(); ImGui.Checkbox("Lock", ref tswl.Locked);
-                    ImGui.NewLine();
                     TileLayers[i] = tswl;
                 }
-
-                ImGui.ListBoxFooter();
 
                 ImGui.End();
             }
@@ -156,7 +188,7 @@ namespace Editor.EditorMenus
                 ImGui.InputText("Layer Name", ref newTileName, 24);
                 if (ImGui.Button("Add Layer"))
                 {
-                    TileLayers.Add(new TilesetWorldLayer(new CollisionTileSet(), newTileName));
+                    TileLayers.Add(new TilesetWorldLayer(new CollisionTileSet(MapSize), newTileName));
                     newTileName = "Temp";
                     NewLayerWindow = false;
                 }
@@ -166,16 +198,49 @@ namespace Editor.EditorMenus
             }
         }
 
-
-
+        public Num.Vector2 editorMousePos;
         public void GameWindow()
         {
             {
-                ImGui.Begin("Game Window");
+                ImGui.Begin("Level Window");
                 //
                 
-                ImGui.Image(gameTexture,new Num.Vector2(Screen.GameWidth * GameZoom, Screen.GameHeight * GameZoom));
-                ImGui.SliderFloat("GameZoom",ref GameZoom,1,4);
+                ImGui.Image(levelTexture, new Num.Vector2((MapSize.X * 16) * GameZoom,(MapSize.Y * 16) * GameZoom));
+                //Get Top left of image
+                Num.Vector2 editorTopLeft = ImGui.GetItemRectMin();
+                Rectangle editorRect = new Rectangle((int)(editorTopLeft.X), (int)(editorTopLeft.Y),(int)(MapSize.X * 16) * GameZoom, (int)((MapSize.Y * 16) * GameZoom));
+                Prim.DrawRectangle(editorRect, Color.Black);
+                Prim.DrawGrid(editorRect, (16 * GameZoom), (16 * GameZoom), new Color(0,0,0,128));
+                Prim.DrawGrid(editorRect, (Screen.GameWidth * GameZoom), (Screen.GameHeight * GameZoom), Color.Yellow);
+
+                //MousePosition in tile pallate
+                editorMousePos = (ImGui.GetMousePos() - editorTopLeft);
+                editorMousePos /= (16 * GameZoom);
+                editorMousePos.X = (int)Math.Floor(editorMousePos.X);
+                editorMousePos.Y = (int)Math.Floor(editorMousePos.Y);
+                editorMousePos *= (16 * GameZoom);
+
+                Num.Vector2 flatMousePos = ImGui.GetMousePos();
+                if (MathMore.PointInRectangle(new Vector2(flatMousePos.X, flatMousePos.Y), editorRect))
+                {
+                    Rectangle editorCursorRect = new Rectangle((int)(editorMousePos.X + editorRect.X), (int)(editorMousePos.Y + editorRect.Y), 16 * GameZoom, 16 * GameZoom);
+                    Prim.DrawRectangle(editorCursorRect, Color.Maroon);
+
+                    //Click Tile
+                    if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                    {
+                        Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
+                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point((int)gridPos.X, (int)gridPos.Y), SelectedTile);
+                    }
+
+                    if (ImGui.IsMouseDown(ImGuiMouseButton.Right))
+                    {
+                        Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
+                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point((int)gridPos.X, (int)gridPos.Y), Point.Zero);
+                    }
+                }
+
+                ImGui.SliderInt("GameZoom",ref GameZoom,1,4);
                 //
                 ImGui.End();
             }
@@ -184,18 +249,24 @@ namespace Editor.EditorMenus
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             
-            _game.GraphicsDevice.SetRenderTarget(gameRenderTarget);
-            _game.GraphicsDevice.Clear(Color.CornflowerBlue);
+            _game.GraphicsDevice.SetRenderTarget(levelRenderTarget);
+            _game.GraphicsDevice.Clear(MapClearCol);
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack,BlendState.AlphaBlend,SamplerState.PointClamp);
 
-            levelScene.Draw(spriteBatch,gameTime);
+            foreach (TilesetWorldLayer tswl in TileLayers)
+            {
+                if (tswl.Visible)
+                {
+                    tswl.tileSet.DrawTileSet(spriteBatch);
+                }
+            }
 
             spriteBatch.End();
 
             _game.GraphicsDevice.SetRenderTarget(null);
 
-            gameTexture = _imGuiRenderer.BindTexture(gameRenderTarget);
+            levelTexture = _imGuiRenderer.BindTexture(levelRenderTarget);
         }
     }
 }

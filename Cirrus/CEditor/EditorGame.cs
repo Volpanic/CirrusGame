@@ -48,7 +48,7 @@ namespace CEditor
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
-            CurrentRunningMenu = new LevelEditor(_imGuiRenderer,this);
+            CurrentRunningMenu = new StartMenu(_imGuiRenderer,this);
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             base.Initialize();

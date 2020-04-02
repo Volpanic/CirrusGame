@@ -14,9 +14,9 @@ namespace Editor.EditorMenus
     public abstract class EditorMenu
     {
         public ImGuiRenderer _imGuiRenderer;
-        public Game _game;
+        public EditorGame _game;
 
-        public EditorMenu(ImGuiRenderer _imgr, Game _gme)
+        public EditorMenu(ImGuiRenderer _imgr, EditorGame _gme)
         {
             _imGuiRenderer = _imgr;
             _game = _gme;

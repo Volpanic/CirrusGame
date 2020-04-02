@@ -13,14 +13,11 @@ namespace Cirrus.Cirrus.Scenes
     public class LevelScene : Scene
     {
         //Tiles
-        CollisionTileSet ctl = new CollisionTileSet();
         public List<TilesetWorldLayer> TileSetList = new List<TilesetWorldLayer>();
 
         public LevelScene(Game _game) : base(_game)
         {
 
-            //Tiles
-            TileSetList.Add(new TilesetWorldLayer(ctl,"Collision"));
         }
 
         public override void Update(GameTime gameTime)

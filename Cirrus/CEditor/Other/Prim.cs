@@ -43,7 +43,7 @@ namespace Editor.Other
                 }
             }
 
-            for (int yy = 0; yy < cWidth; yy++)
+            for (int yy = 0; yy < cHeight; yy++)
             {
                 if (bounds.Y + (yy * cHeight) <= bounds.Y + bounds.Height)
                 {
