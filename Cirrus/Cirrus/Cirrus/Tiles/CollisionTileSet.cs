@@ -21,17 +21,6 @@ namespace Cirrus.Cirrus.Tiles
             SetGridPosition(new Point(1, 1), new Point(2, 0));
             SetGridPosition(new Point(1, 2), new Point(1, 0));
             SetGridPosition(new Point(2, 1), new Point(3, 0));
-
-            for (int xx = 0; xx < TileGridArray.GetLength(0); xx++)
-            {
-                Console.WriteLine();
-                for (int yy = 0; yy < TileGridArray.GetLength(1); yy++)
-                {
-                    Console.Write($" - {TileGridArray[xx,yy].X},{TileGridArray[xx, yy].Y}-");
-                }
-            }
-
-            Console.Write(TileGridArray.ToString());
         }
     }
 }

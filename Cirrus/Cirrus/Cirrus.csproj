@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Cirrus\Component.cs" />
     <Compile Include="Cirrus\Helpers\Drawing.cs" />
+    <Compile Include="Cirrus\Helpers\MathMore.cs" />
     <Compile Include="Cirrus\Helpers\Sprites.cs" />
     <Compile Include="Cirrus\Scenes\LevelScene.cs" />
     <Compile Include="Cirrus\Scenes\Scene.cs" />

@@ -23,7 +23,7 @@ namespace CEditor
 
         public EditorGame()
         {
-            Window.AllowUserResizing = true ;
+            Window.AllowUserResizing = true;
 
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = 1280;

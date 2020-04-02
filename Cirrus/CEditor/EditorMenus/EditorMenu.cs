@@ -33,19 +33,5 @@ namespace Editor.EditorMenus
         {
 
         }
-
-        public static void DrawPrimRectangle(Rectangle rect)
-        {
-            Num.Vector2 bottemRight = new Num.Vector2(rect.X + rect.Width, rect.Y + rect.Height);
-
-            // -- //
-            ImGui.GetWindowDrawList().AddLine(new Num.Vector2(rect.X, rect.Y), new Num.Vector2(bottemRight.X, rect.Y), Color.White.PackedValue);
-            ImGui.GetWindowDrawList().AddLine(new Num.Vector2(rect.X, bottemRight.Y), new Num.Vector2(bottemRight.X, bottemRight.Y), Color.White.PackedValue);
-
-            // || //
-            ImGui.GetWindowDrawList().AddLine(new Num.Vector2(rect.X, rect.Y), new Num.Vector2(rect.X, bottemRight.Y), Color.White.PackedValue);
-            ImGui.GetWindowDrawList().AddLine(new Num.Vector2(bottemRight.X, rect.Y), new Num.Vector2(bottemRight.X, bottemRight.Y), Color.White.PackedValue);
-        }
-
     }
 }

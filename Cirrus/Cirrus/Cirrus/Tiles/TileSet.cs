@@ -108,7 +108,6 @@ namespace Cirrus.Cirrus.Tiles
                 for (int yy = 0; yy < TileGridArray.GetLength(1); yy++)
                 {
                     Rectangle sourceRect = GetTileRect(new Point(xx,yy));
-                    Console.WriteLine(sourceRect.ToString());
 
                     spriteBatch.Draw(TileSetTexture,new Vector2(xx * TileWidth, yy * TileHeight),sourceRect,Color.White,0.0f,Vector2.Zero,1.0f,SpriteEffects.None, Depth);
 
