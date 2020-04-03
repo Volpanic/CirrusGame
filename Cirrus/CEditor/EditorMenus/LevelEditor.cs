@@ -64,6 +64,25 @@ namespace Editor.EditorMenus
 
         public override void ImGuiLayout()
         {
+            //MainTab
+            if (ImGui.BeginMainMenuBar())
+            {
+                if(ImGui.BeginMenu("File"))
+                {
+                    if (ImGui.MenuItem("Save")) _game.Exit();
+                    ImGui.MenuItem("Load");
+                    ImGui.EndMenu();
+                }
+
+                if (ImGui.BeginMenu("View"))
+                {
+                    ImGui.Checkbox("Editor Tile Grid",ref viewTileGrid);
+                    ImGui.EndMenu();
+                }
+
+                ImGui.EndMainMenuBar();
+            }
+
 
             TilePallateWindow();
             //Tile Layers window
@@ -77,7 +96,9 @@ namespace Editor.EditorMenus
 
         public Num.Vector2 tilePallateMousePos;
         public int tileSetZoom = 2;
-        public Point SelectedTile;
+        public Point[,] SelectedTileBrush = new Point[1, 1];
+        public Point selectedTopLeft;
+        public Point selectedTopRight;
         public void TilePallateWindow()
         {
             //Tile Pallate Window
@@ -104,31 +125,63 @@ namespace Editor.EditorMenus
                 tilePallateMousePos.Y = (int)Math.Floor(tilePallateMousePos.Y);
                 tilePallateMousePos *= (16 * tileSetZoom);
 
+                int xdif = selectedTopRight.X - selectedTopLeft.X;
+                int ydif = selectedTopRight.Y - selectedTopLeft.Y;
+                xdif = Math.Max(1, xdif);
+                ydif = Math.Max(1, ydif);
+
+                Rectangle tileSelectedRect = new Rectangle((int)((selectedTopLeft.X * 16 * tileSetZoom) + imageTopLeft.X), (int)((selectedTopLeft.Y * 16 * tileSetZoom) + imageTopLeft.Y), (16 * tileSetZoom) * xdif, (16 * tileSetZoom) * ydif);
+                Prim.DrawRectangle(tileSelectedRect, Color.Lime);
+
+                //Select Rectangle of tiles
                 Num.Vector2 flatMousePos = ImGui.GetMousePos();
                 if (MathMore.PointInRectangle(new Vector2(flatMousePos.X, flatMousePos.Y), tilePallateRect))
                 {
-                    Rectangle tileCursorRect = new Rectangle((int)(tilePallateMousePos.X + imageTopLeft.X), (int)(tilePallateMousePos.Y + imageTopLeft.Y), 16 * tileSetZoom, 16 * tileSetZoom);
+                    Num.Vector2 tilePos = (tilePallateMousePos / (16 * tileSetZoom));
+
+                    Rectangle tileCursorRect = new Rectangle((int)((selectedTopLeft.X*16*tileSetZoom) + imageTopLeft.X), (int)((selectedTopLeft.Y*16 * tileSetZoom) + imageTopLeft.Y), (16 * tileSetZoom) * xdif, (16 * tileSetZoom) * ydif);
                     Prim.DrawRectangle(tileCursorRect, Color.Maroon);
 
-                    //Click Tile
                     if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                     {
-                        Num.Vector2 tilePos = (tilePallateMousePos / (16 * tileSetZoom));
-                        SelectedTile = new Point((int)tilePos.X, (int)tilePos.Y);
+                        selectedTopLeft = new Point((int)tilePos.X, (int)tilePos.Y);
                     }
+                    else if(ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                    {
+                        selectedTopRight = new Point((int)tilePos.X+1, (int)tilePos.Y+1);
+                    }
+                    else if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                    {
+                        
+
+                        SelectedTileBrush = new Point[xdif,ydif];
+
+                        for (int xx = 0; xx < xdif; xx++)
+                        {
+                            for (int yy = 0; yy < ydif; yy++)
+                            {
+                                SelectedTileBrush[xx, yy] = new Point(xx + selectedTopLeft.X,yy + selectedTopLeft.Y);
+                            }
+                        }
+
+                    }
+
                 }
 
                 ImGui.Separator();
                 ImGui.Text("Pen Type");
-                ImGui.Button("Pencil");
-                ImGui.Button("Rectangle");
-                ImGui.Button("Fill");
-                ImGui.Text($"Tile Pos: {SelectedTile.ToString()}");
+
+                if (ImGui.Button("Pencil")) PlaceMode = 0;
+                if (ImGui.Button("Rectangle")) PlaceMode = 1;
+                if (ImGui.Button("Fill")) PlaceMode = 2;
+
+                //ImGui.Text($"Tile Pos: {SelectedTile.ToString()}");
 
                 ImGui.End();
             }
         }
 
+        int tileLayerSelectedSprite = 0;
         public void TileLayerWindow()
         {
             {
@@ -144,6 +197,8 @@ namespace Editor.EditorMenus
                         if (ImGui.Selectable(TileLayers[i].Name, selected))
                         {
                             LayerListPosition = i;
+                            tilePallateTexture = _imGuiRenderer.BindTexture(TileLayers[i].tileSet.TileSetTexture);
+                            tilePallateTextureSize = new Point(TileLayers[i].tileSet.TileSetTexture.Width, TileLayers[i].tileSet.TileSetTexture.Height);
                         }
 
                         if (selected)
@@ -181,14 +236,37 @@ namespace Editor.EditorMenus
 
             if (NewLayerWindow)
             {
+                //ImGui.SetNextWindowFocus();
                 ImGui.Begin("New Tile Layer");
-
 
                 //Put Tile set stuff here later
                 ImGui.InputText("Layer Name", ref newTileName, 24);
+
+                if (ImGui.BeginCombo("Sprite", Sprites.SpriteList.Keys[0]))
+                {
+                    for (int i = 0; i < Sprites.SpriteList.Count; i++)
+                    {
+                        bool selected = (tileLayerSelectedSprite == i);
+                        if (ImGui.Selectable(Sprites.SpriteList.Keys[i], selected))
+                        {
+                            tileLayerSelectedSprite = i;
+                            
+                        }
+
+                        if (selected)
+                        {
+                            ImGui.SetItemDefaultFocus();
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
+
                 if (ImGui.Button("Add Layer"))
                 {
-                    TileLayers.Add(new TilesetWorldLayer(new CollisionTileSet(MapSize), newTileName));
+                    TileSet tmp = new TileSet(MapSize);
+                    tmp.TileSetTexture = Sprites.SpriteList.Values[tileLayerSelectedSprite];
+
+                    TileLayers.Add(new TilesetWorldLayer(tmp, newTileName));
                     newTileName = "Temp";
                     NewLayerWindow = false;
                 }
@@ -198,7 +276,11 @@ namespace Editor.EditorMenus
             }
         }
 
+        public bool viewTileGrid = true;
         public Num.Vector2 editorMousePos;
+        public int PlaceMode = 0; // 0 = pen | 1 = rectangle | 2 = fill?
+        public Point rectPlaceTopLeft = Point.Zero;
+        public Point rectPlaceBotRight = Point.Zero;
         public void GameWindow()
         {
             {
@@ -210,7 +292,10 @@ namespace Editor.EditorMenus
                 Num.Vector2 editorTopLeft = ImGui.GetItemRectMin();
                 Rectangle editorRect = new Rectangle((int)(editorTopLeft.X), (int)(editorTopLeft.Y),(int)(MapSize.X * 16) * GameZoom, (int)((MapSize.Y * 16) * GameZoom));
                 Prim.DrawRectangle(editorRect, Color.Black);
-                Prim.DrawGrid(editorRect, (16 * GameZoom), (16 * GameZoom), new Color(0,0,0,128));
+                if (viewTileGrid)
+                {
+                    Prim.DrawGrid(editorRect, (16 * GameZoom), (16 * GameZoom), new Color(0, 0, 0, 128));
+                }
                 Prim.DrawGrid(editorRect, (Screen.GameWidth * GameZoom), (Screen.GameHeight * GameZoom), Color.Yellow);
 
                 //MousePosition in tile pallate
@@ -223,20 +308,106 @@ namespace Editor.EditorMenus
                 Num.Vector2 flatMousePos = ImGui.GetMousePos();
                 if (MathMore.PointInRectangle(new Vector2(flatMousePos.X, flatMousePos.Y), editorRect))
                 {
-                    Rectangle editorCursorRect = new Rectangle((int)(editorMousePos.X + editorRect.X), (int)(editorMousePos.Y + editorRect.Y), 16 * GameZoom, 16 * GameZoom);
-                    Prim.DrawRectangle(editorCursorRect, Color.Maroon);
-
-                    //Click Tile
-                    if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                    switch (PlaceMode)
                     {
-                        Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
-                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point((int)gridPos.X, (int)gridPos.Y), SelectedTile);
-                    }
+                        case 0: // Pen
+                        {
+                            #region // PenTool
+                            Rectangle editorCursorRect = new Rectangle((int)(editorMousePos.X + editorRect.X), (int)(editorMousePos.Y + editorRect.Y), (SelectedTileBrush.GetLength(0) * 16) * GameZoom, (SelectedTileBrush.GetLength(1) * 16) * GameZoom);
+                            Prim.DrawRectangle(editorCursorRect, Color.Maroon);
 
-                    if (ImGui.IsMouseDown(ImGuiMouseButton.Right))
-                    {
-                        Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
-                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point((int)gridPos.X, (int)gridPos.Y), Point.Zero);
+                            //Click Tile
+                            if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                            {
+                                Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
+
+                                //Draw rect
+                                for (int xx = (int)gridPos.X; xx < (int)gridPos.X + SelectedTileBrush.GetLength(0); xx++)
+                                {
+                                    for (int yy = (int)gridPos.Y; yy < (int)gridPos.Y + SelectedTileBrush.GetLength(1); yy++)
+                                    {
+                                        int bX = (int)(xx - (int)gridPos.X);
+                                        int bY = (int)(yy - (int)gridPos.Y);
+
+                                        Point tileP = SelectedTileBrush[bX, bY];
+
+                                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point(xx, yy), tileP);
+                                    }
+                                }
+
+                            }
+
+                            if (ImGui.IsMouseDown(ImGuiMouseButton.Right))
+                            {
+                                Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
+                                //EraseRect
+                                for (int xx = (int)gridPos.X; xx < (int)gridPos.X + SelectedTileBrush.GetLength(0); xx++)
+                                {
+                                    for (int yy = (int)gridPos.Y; yy < (int)gridPos.Y + SelectedTileBrush.GetLength(1); yy++)
+                                    {
+
+                                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point(xx, yy), Point.Zero);
+                                    }
+                                }
+                            }
+                            #endregion // EndPenTool
+                            break;
+                        }
+
+                        case 1:
+                        {
+                            #region // RectangleTool
+                            Num.Vector2 gridPos = (editorMousePos / (16 * GameZoom));
+
+                            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                            {
+                                rectPlaceTopLeft = new Point((int)gridPos.X, (int)gridPos.Y);
+                                rectPlaceBotRight = new Point((int)gridPos.X + 1, (int)gridPos.Y + 1);
+                            }
+                            else if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                            {
+                                rectPlaceBotRight = new Point((int)gridPos.X + 1, (int)gridPos.Y + 1);
+                                //Place
+
+                                int xdif = rectPlaceBotRight.X - rectPlaceTopLeft.X;
+                                int ydif = rectPlaceBotRight.Y - rectPlaceTopLeft.Y;
+                                xdif = Math.Max(1, xdif);
+                                ydif = Math.Max(1, ydif);
+
+                                for (int xx = rectPlaceTopLeft.X; xx < rectPlaceTopLeft.X + xdif; xx++)
+                                {
+                                    for (int yy = rectPlaceTopLeft.Y; yy < rectPlaceTopLeft.Y + ydif; yy++)
+                                    {
+                                        int bX = (int)(xx - (int)gridPos.X);
+                                        int bY = (int)(yy - (int)gridPos.Y);
+
+                                        Point tileP = SelectedTileBrush[bX % SelectedTileBrush.GetLength(0), bY % SelectedTileBrush.GetLength(1)];
+
+                                        TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point(xx, yy), tileP);
+                                    }
+                                }
+
+
+                            }
+                            else if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
+                            {
+                                rectPlaceBotRight = new Point((int)gridPos.X+1, (int)gridPos.Y+1);
+
+                                int mgic = 16 * GameZoom;
+                                Point tl = new Point((int)editorTopLeft.X + (rectPlaceTopLeft.X * mgic), (int)editorTopLeft.Y + (rectPlaceTopLeft.Y * mgic));
+                                Rectangle rectRect = new Rectangle(tl, new Point((rectPlaceBotRight.X - rectPlaceTopLeft.X)* mgic, (rectPlaceBotRight.Y - rectPlaceTopLeft.Y)* mgic));
+
+                                Prim.DrawRectangle(rectRect,Color.Maroon);
+                            }
+                            else
+                            {
+                                Rectangle editorCursorRect = new Rectangle((int)(editorMousePos.X + editorRect.X), (int)(editorMousePos.Y + editorRect.Y), (SelectedTileBrush.GetLength(0) * 16) * GameZoom, (SelectedTileBrush.GetLength(1) * 16) * GameZoom);
+                                Prim.DrawRectangle(editorCursorRect, Color.Maroon);
+                            }
+
+                            #endregion
+                            break;
+                        }
                     }
                 }
 

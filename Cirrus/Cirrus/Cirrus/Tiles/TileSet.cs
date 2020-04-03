@@ -40,7 +40,7 @@ namespace Cirrus.Cirrus.Tiles
         }
     }
 
-    public abstract class TileSet
+    public class TileSet
     {
         public Texture2D TileSetTexture;
         public int TileWidth = 16;

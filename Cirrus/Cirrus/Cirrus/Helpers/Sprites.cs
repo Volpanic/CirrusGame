@@ -13,7 +13,7 @@ namespace Cirrus.Cirrus.Helpers
 {
     public static class Sprites
     {
-        private static SortedDictionary<string, Texture2D> SpriteList = new SortedDictionary<string, Texture2D>();
+        public static SortedList<string, Texture2D> SpriteList = new SortedList<string, Texture2D>();
 
         public static void Init(ContentManager _content)
         {

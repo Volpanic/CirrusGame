@@ -39,7 +39,7 @@ namespace Editor.Other
             {
                 if(bounds.X + (xx * cWidth) <= bounds.X + bounds.Width)
                 {
-                    ImGui.GetWindowDrawList().AddLine(new Num.Vector2(bounds.X + (xx * cWidth),bounds.Y), new Num.Vector2(bounds.X + (xx * cWidth), bounds.Y + bounds.Height),color.PackedValue);
+                    ImGui.GetWindowDrawList().AddLine(new Num.Vector2(bounds.X + (xx * cWidth),bounds.Y), new Num.Vector2(bounds.X + (xx * cWidth), bounds.Y + bounds.Height),color.PackedValue,2);
                 }
             }
 
@@ -47,7 +47,7 @@ namespace Editor.Other
             {
                 if (bounds.Y + (yy * cHeight) <= bounds.Y + bounds.Height)
                 {
-                    ImGui.GetWindowDrawList().AddLine(new Num.Vector2(bounds.X, bounds.Y + (cHeight*yy)), new Num.Vector2(bounds.X + bounds.Width, bounds.Y + (cHeight * yy)), color.PackedValue);
+                    ImGui.GetWindowDrawList().AddLine(new Num.Vector2(bounds.X, bounds.Y + (cHeight*yy)), new Num.Vector2(bounds.X + bounds.Width, bounds.Y + (cHeight * yy)), color.PackedValue,2);
                 }
             }
 

@@ -38,10 +38,8 @@ namespace CEditor
 
             string basePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
-            //basePath = Path.GetFullPath(Path.Combine(basePath,@"..\..\"));
-            //basePath = Path.Combine(basePath,"Cirrus", "Cirrus", "Content");
-            //Content.RootDirectory = "C:\\Users\\ryan6\\source\\repos\\Cirrus\\Cirrus\\Cirrus\\Content";
-            Content.RootDirectory = @"C:\Users\ryan6\source\repos\Cirrus\Cirrus\Cirrus\bin\DesktopGL\AnyCPU\Debug\Content";
+            basePath = Path.GetFullPath(Path.Combine(basePath,@"..\"));
+            Content.RootDirectory = Path.Combine(basePath, @"Cirrus\bin\DesktopGL\AnyCPU\Debug\Content");
 
             Sprites.Init(Content);
 
@@ -69,6 +67,11 @@ namespace CEditor
 			_imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
 
             base.LoadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            Sprites.Unload(Content);
         }
 
         protected override void Draw(GameTime gameTime)
