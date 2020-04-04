@@ -91,11 +91,6 @@ namespace CEditor
             base.Draw(gameTime);
         }
 
-        // Direct port of the example at https://github.com/ocornut/imgui/blob/master/examples/sdl_opengl2_example/main.cpp
-        private float f = 0.0f;
-
-        private bool show_test_window = false;
-        private bool show_another_window = false;
         private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);
         private byte[] _textBuffer = new byte[100];
 

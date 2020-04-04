@@ -240,7 +240,7 @@ namespace Editor.EditorMenus
                 ImGui.Begin("New Tile Layer");
 
                 //Put Tile set stuff here later
-                ImGui.InputText("Layer Name", ref newTileName, 24);
+                ImGui.InputText("Layer Name", ref newTileName, 24,ImGuiInputTextFlags.CharsNoBlank);
 
                 if (ImGui.BeginCombo("Sprite", Sprites.SpriteList.Keys[0]))
                 {
@@ -378,10 +378,12 @@ namespace Editor.EditorMenus
                                 {
                                     for (int yy = rectPlaceTopLeft.Y; yy < rectPlaceTopLeft.Y + ydif; yy++)
                                     {
-                                        int bX = (int)(xx - (int)gridPos.X);
-                                        int bY = (int)(yy - (int)gridPos.Y);
+                                        int bX = (int)(xx - (int)rectPlaceTopLeft.X) % SelectedTileBrush.GetLength(0);
+                                        int bY = (int)(yy - (int)rectPlaceTopLeft.Y) % SelectedTileBrush.GetLength(1);
+                                        
+                                        
 
-                                        Point tileP = SelectedTileBrush[bX % SelectedTileBrush.GetLength(0), bY % SelectedTileBrush.GetLength(1)];
+                                        Point tileP = SelectedTileBrush[bX,bY];
 
                                         TileLayers[LayerListPosition].tileSet.SetGridPosition(new Point(xx, yy), tileP);
                                     }
