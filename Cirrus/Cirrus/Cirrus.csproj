@@ -42,7 +42,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Cirrus\Collision\AABB.cs" />
     <Compile Include="Cirrus\Component.cs" />
+    <Compile Include="Cirrus\Entities\Entity.cs" />
     <Compile Include="Cirrus\Helpers\Drawing.cs" />
     <Compile Include="Cirrus\Helpers\MathMore.cs" />
     <Compile Include="Cirrus\Helpers\Sprites.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="Cirrus\Tiles\CollisionTileSet.cs" />
     <Compile Include="Cirrus\Tiles\TileSet.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen.cs" />

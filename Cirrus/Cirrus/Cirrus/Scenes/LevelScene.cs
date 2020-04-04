@@ -15,7 +15,7 @@ namespace Cirrus.Cirrus.Scenes
         //Tiles
         public List<TilesetWorldLayer> TileSetList = new List<TilesetWorldLayer>();
 
-        public LevelScene(Game _game) : base(_game)
+        public LevelScene(GameRunner _game) : base(_game)
         {
 
         }
@@ -30,12 +30,12 @@ namespace Cirrus.Cirrus.Scenes
             //Tiles
             foreach(TilesetWorldLayer tswl in TileSetList)
             {
-                if(tswl.Visible)
+                if (tswl.Visible)
                 {
                     tswl.tileSet.DrawTileSet(spriteBatch);
                 }
+                
             }
-
         }
 
         public override void DrawGui(SpriteBatch spriteBatch, GameTime gameTime)

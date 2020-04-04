@@ -10,9 +10,9 @@ namespace Cirrus.Cirrus.Scenes
 {
     public abstract class Scene
     {
-        public Game baseGame;
+        public GameRunner baseGame;
 
-        public Scene(Game _game)
+        public Scene(GameRunner _game)
         {
             baseGame = _game;
         }

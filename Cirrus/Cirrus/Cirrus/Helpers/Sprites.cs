@@ -14,9 +14,12 @@ namespace Cirrus.Cirrus.Helpers
     public static class Sprites
     {
         public static SortedList<string, Texture2D> SpriteList = new SortedList<string, Texture2D>();
+        public static bool Inited = false;
 
         public static void Init(ContentManager _content)
         {
+            if (Inited) return;
+
             string[] f = Directory.GetFiles(Path.Combine(_content.RootDirectory,"Sprites"));
 
             foreach(string name in f)
@@ -28,6 +31,8 @@ namespace Cirrus.Cirrus.Helpers
                     Console.WriteLine(Path.GetFileNameWithoutExtension(name));
                 }
             }
+
+            Inited = true;
         }
 
         public static void Unload(ContentManager _content)
