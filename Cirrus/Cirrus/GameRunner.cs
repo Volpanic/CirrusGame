@@ -18,7 +18,7 @@ namespace Cirrus
 
         //Scenes
         private Scene runningScene;
-        public Scene CurrentScene;
+        public Scene CurrentScene { get { return runningScene; } set { runningScene = value; } }
 
         public Screen screen;
 
@@ -50,10 +50,8 @@ namespace Cirrus
             runningScene.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, RenderTarget2D finalRenderTarget = null)
+        private void gameDraw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
-
             //Regular Draw
             GraphicsDevice.SetRenderTarget(ApplicationSurface);
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
@@ -65,7 +63,7 @@ namespace Cirrus
 
             spriteBatch.End();
 
-            //Regular Draw
+            //GUI Draw
             GraphicsDevice.SetRenderTarget(GuiSurface);
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
 
@@ -75,13 +73,34 @@ namespace Cirrus
             //runningScene.DrawGui(spriteBatch, gameTime);
 
             spriteBatch.End();
+        }
+
+        public void Draw(GameTime gameTime,ref RenderTarget2D finalRenderTarget) // for editor
+        {
+            gameDraw(gameTime);
 
             GraphicsDevice.SetRenderTarget(finalRenderTarget);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
+            spriteBatch.Draw(ApplicationSurface, new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.Draw(GuiSurface, new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+        }
+
+        public void Draw(GameTime gameTime) // for game
+        {
+            gameDraw(gameTime);
+
+            GraphicsDevice.SetRenderTarget(null);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+
             spriteBatch.Draw(ApplicationSurface, new Rectangle(0, 0, Screen.GameWidth * Screen.GameZoom, Screen.GameHeight * Screen.GameZoom), new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0);
             spriteBatch.Draw(GuiSurface, new Rectangle(0, 0, Screen.GameWidth * Screen.GameZoom, Screen.GameHeight * Screen.GameZoom), new Rectangle(0, 0, Screen.GameWidth, Screen.GameHeight), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0);
+
 
             spriteBatch.End();
         }

@@ -45,6 +45,7 @@
     <Compile Include="Cirrus\Collision\AABB.cs" />
     <Compile Include="Cirrus\Component.cs" />
     <Compile Include="Cirrus\Entities\Entity.cs" />
+    <Compile Include="Cirrus\Entities\Player.cs" />
     <Compile Include="Cirrus\Helpers\Drawing.cs" />
     <Compile Include="Cirrus\Helpers\MathMore.cs" />
     <Compile Include="Cirrus\Helpers\Sprites.cs" />

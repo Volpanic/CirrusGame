@@ -27,7 +27,7 @@ namespace Editor.EditorMenus
         public bool RunningGame = false;
 
         //GameView stuff
-        public LevelScene levelScene = new LevelScene(null);
+        public GameRunner gameRunner;
         public RenderTarget2D gameRenderTarget; // Game View
         public RenderTarget2D levelRenderTarget; //Place View
         private IntPtr gameTexture;
@@ -87,15 +87,20 @@ namespace Editor.EditorMenus
                 {
                     if (ImGui.MenuItem("Stop Run"))
                     { 
-                    RunningGame = false;
-                    levelScene = null;
-                    gameRenderTarget.Dispose();
+                        RunningGame = false;
+                        gameRenderTarget.Dispose();
+                        gameRunner.Unload();
+                        gameRunner = null;
                     }
                 }
                 else if (ImGui.MenuItem("Run"))
                 {
-                    levelScene = new LevelScene(null);
-                    levelScene.TileSetList = TileLayers;
+                    gameRunner = new GameRunner(_game._graphics,_game.spriteBatch,_game.Content);
+                    LevelScene ls = new LevelScene(null);
+                    ls.TileSetList = TileLayers;
+
+                    gameRunner.CurrentScene = ls;
+
                     RunningGame = true;
                 }
 
@@ -490,18 +495,9 @@ namespace Editor.EditorMenus
 
                 levelTexture = _imGuiRenderer.BindTexture(levelRenderTarget);
             }
-            else
+            else // Game Running
             {
-                _game.GraphicsDevice.SetRenderTarget(gameRenderTarget);
-                _game.GraphicsDevice.Clear(MapClearCol);
-
-                spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
-
-                levelScene.Draw(spriteBatch,gameTime);
-
-                spriteBatch.End();
-
-                _game.GraphicsDevice.SetRenderTarget(null);
+                gameRunner.Draw(gameTime,ref gameRenderTarget);
 
                 levelTexture = _imGuiRenderer.BindTexture(gameRenderTarget);
             }
@@ -509,9 +505,9 @@ namespace Editor.EditorMenus
 
         public override void Update(GameTime gameTime)
         {
-            if(RunningGame)
+            if(RunningGame) // GameRunning
             {
-                levelScene.Update(gameTime);
+                gameRunner.Update(gameTime);
             }
         }
     }

@@ -12,8 +12,8 @@ namespace CEditor
 {
     public class EditorGame : Game
     {
-        private GraphicsDeviceManager _graphics;
-        SpriteBatch spriteBatch;
+        public GraphicsDeviceManager _graphics;
+        public SpriteBatch spriteBatch;
         private ImGuiRenderer _imGuiRenderer;
 
         private Texture2D _xnaTexture;
@@ -93,8 +93,6 @@ namespace CEditor
 
         private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);
         private byte[] _textBuffer = new byte[100];
-
-        float r = 0;
 
         protected virtual void ImGuiLayout()
         {
