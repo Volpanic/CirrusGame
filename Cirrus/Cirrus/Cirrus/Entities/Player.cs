@@ -25,8 +25,6 @@ namespace Cirrus.Cirrus.Entities
             SpriteWidth = Sprite.Width;
             SpriteHeight = Sprite.Height;
             Origin = new Vector2(SpriteWidth/2,SpriteHeight/2);
-            Scale.X = -1;
-            Scale.Y = -1;
         }
 
         public override void Update(GameTime gameTime)
@@ -40,6 +38,11 @@ namespace Cirrus.Cirrus.Entities
                     
                     break;
                 }
+            }
+
+            if(Velocity.X != 0)
+            {
+                Scale.X = Math.Sign(Velocity.X); ;
             }
         }
 

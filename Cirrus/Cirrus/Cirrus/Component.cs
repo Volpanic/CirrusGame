@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Cirrus.Cirrus
 {
@@ -39,6 +40,10 @@ namespace Cirrus.Cirrus
 
             Rectangle spriteRect = new Rectangle(0,0, SpriteWidth, SpriteHeight);
 
+            bool flipX = (Math.Sign(Scale.X) == -1);
+            bool flipY = (Math.Sign(Scale.Y) == -1);
+            Vector2 fscale = new Vector2(Math.Abs(Scale.X),Math.Abs(Scale.Y));
+
             if (Sprite.Width != SpriteWidth)
             {
                 AnimationTimer++;
@@ -56,11 +61,11 @@ namespace Cirrus.Cirrus
 
 
                 spriteRect.X = (SpriteWidth * ImageIndex);
-                spriteBatch.Draw(Sprite,Position,spriteRect,Color.White,Rotation, Origin,Scale,SpriteEffects.None, Depth);
+                spriteBatch.Draw(Sprite,Position,spriteRect,Color.White,Rotation, Origin, fscale, (flipX? SpriteEffects.FlipHorizontally : SpriteEffects.None) | (flipY ? SpriteEffects.FlipVertically : SpriteEffects.None), Depth);
             }
             else
             {
-                spriteBatch.Draw(Sprite, Position, spriteRect, Color.White, Rotation, Origin, Scale, SpriteEffects.None, Depth);
+                spriteBatch.Draw(Sprite, Position, spriteRect, Color.White, Rotation, Origin, fscale, (flipX ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | (flipY ? SpriteEffects.FlipVertically : SpriteEffects.None), Depth);
             }
         }
 

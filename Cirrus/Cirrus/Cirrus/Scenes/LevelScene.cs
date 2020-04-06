@@ -30,16 +30,14 @@ namespace Cirrus.Cirrus.Scenes
 
         private TileSet GetCollisionSet()
         {
-            if(TileSetList.Count > 0)
+            if(TileSetList != null && TileSetList.Count > 0)
             {
                 return TileSetList[0].tileSet;
             }
             else
             {
+                TileSetList = new List<TilesetWorldLayer>();
                 CollisionTileSet cts = new CollisionTileSet(new Point(16,9));
-
-                int z = 0;
-                int f = 16 / z;
 
                 TileSetList.Add(new TilesetWorldLayer(cts,"Collision"));
                 return TileSetList[0].tileSet;

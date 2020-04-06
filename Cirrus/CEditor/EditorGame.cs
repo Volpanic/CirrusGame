@@ -74,6 +74,11 @@ namespace CEditor
             Sprites.Unload(Content);
         }
 
+        protected override void Update(GameTime gameTime)
+        {
+            CurrentRunningMenu.Update(gameTime);
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));

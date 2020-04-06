@@ -30,7 +30,6 @@ namespace Editor.EditorMenus
         public GameRunner gameRunner;
         public RenderTarget2D gameRenderTarget; // Game View
         public RenderTarget2D levelRenderTarget; //Place View
-        private IntPtr gameTexture;
         private IntPtr levelTexture;
         private int GameZoom = 1;
 
@@ -88,17 +87,13 @@ namespace Editor.EditorMenus
                     if (ImGui.MenuItem("Stop Run"))
                     { 
                         RunningGame = false;
-                        gameRenderTarget.Dispose();
-                        gameRunner.Unload();
                         gameRunner = null;
                     }
                 }
                 else if (ImGui.MenuItem("Run"))
                 {
                     gameRunner = new GameRunner(_game._graphics,_game.spriteBatch,_game.Content);
-                    LevelScene ls = new LevelScene(null);
-                    ls.TileSetList = TileLayers;
-
+                    LevelScene ls = new LevelScene(gameRunner, TileLayers);
                     gameRunner.CurrentScene = ls;
 
                     RunningGame = true;
@@ -135,6 +130,7 @@ namespace Editor.EditorMenus
         public Point selectedTopRight;
         public void TilePallateWindow()
         {
+
             //Tile Pallate Window
             {
                 ImGui.Begin("Tiles");
@@ -187,7 +183,6 @@ namespace Editor.EditorMenus
                     else if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
                     {
                         
-
                         SelectedTileBrush = new Point[xdif,ydif];
 
                         for (int xx = 0; xx < xdif; xx++)
@@ -201,12 +196,6 @@ namespace Editor.EditorMenus
                     }
 
                 }
-
-                ImGui.Separator();
-                ImGui.Text("Pen Type");
-
-                
-
                 //ImGui.Text($"Tile Pos: {SelectedTile.ToString()}");
 
                 ImGui.End();
@@ -327,7 +316,7 @@ namespace Editor.EditorMenus
                 ImGui.SameLine();
                 if (ImGui.Button("Rectangle")) PlaceMode = 1;
                 ImGui.SameLine();
-                if (ImGui.Button("Fill")) PlaceMode = 2;
+                if (ImGui.Button("Fill (Unimplemented)")) PlaceMode = 2;
                 ImGui.SliderInt("GameZoom", ref GameZoom, 1, 4);
 
                 ImGui.EndGroup();
