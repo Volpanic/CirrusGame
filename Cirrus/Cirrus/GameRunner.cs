@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,30 +25,39 @@ namespace Cirrus
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        ContentManager Content;
+        public Input input = new Input();
         GraphicsDevice GraphicsDevice { get{return graphics.GraphicsDevice; } }
+
+        public SpriteFont BasicFont;
 
         public GameRunner(GraphicsDeviceManager _graphics,SpriteBatch _spriteBatch,ContentManager _content)
         {
             graphics = _graphics;
             spriteBatch = _spriteBatch;
+            Content = _content;
 
             screen = new Screen(graphics);
 
             ApplicationSurface = new RenderTarget2D(GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
             GuiSurface = new RenderTarget2D(GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
 
-            runningScene = new LevelScene(this);
+            runningScene = new TitleScene(this);
+
+            BasicFont = Content.Load<SpriteFont>(Path.Combine("Fonts", "fnt_basic"));
         }
 
         public void Unload()
         {
             ApplicationSurface.Dispose();
             GuiSurface.Dispose();
+            Content.Unload();
         }
 
         public void Update(GameTime gameTime)
         {
             runningScene.Update(gameTime);
+            input.Update(gameTime);
         }
 
         private void gameDraw(GameTime gameTime)
@@ -67,11 +77,13 @@ namespace Cirrus
             GraphicsDevice.SetRenderTarget(GuiSurface);
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
 
+            runningScene.DrawGui(spriteBatch,gameTime);
+
             //Clear
             GraphicsDevice.Clear(Color.Transparent);
 
             //runningScene.DrawGui(spriteBatch, gameTime);
-
+           
             spriteBatch.End();
         }
 

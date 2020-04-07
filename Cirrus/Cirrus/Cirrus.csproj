@@ -51,11 +51,13 @@
     <Compile Include="Cirrus\Helpers\Sprites.cs" />
     <Compile Include="Cirrus\Scenes\LevelScene.cs" />
     <Compile Include="Cirrus\Scenes\Scene.cs" />
+    <Compile Include="Cirrus\Scenes\TitleScene.cs" />
     <Compile Include="Cirrus\TestCom.cs" />
     <Compile Include="Cirrus\Tiles\CollisionTileSet.cs" />
     <Compile Include="Cirrus\Tiles\TileSet.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameRunner.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen.cs" />
@@ -118,6 +120,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cirrus\Backgrounds\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
