@@ -47,6 +47,7 @@ namespace Cirrus.Cirrus.Scenes
         public override void Update(GameTime gameTime)
         {
             player.Update(gameTime);
+            
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)

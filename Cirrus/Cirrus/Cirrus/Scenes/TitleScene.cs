@@ -1,4 +1,5 @@
-﻿using Cirrus.Cirrus.Helpers;
+﻿using Cirrus.Cirrus.Backgrounds;
+using Cirrus.Cirrus.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,19 +17,27 @@ namespace Cirrus.Cirrus.Scenes
         public string[] MenuItems = new string[] { "Start Game", "Load Game", "Options", "Exit" };
         public float menuPosScale = 0.5f;
         public float SinTimer = 0;
+        public Texture2D Logo;
 
         public TitleScene(GameRunner _game) : base(_game)
         {
+            Background blue = new Background(Sprites.GetSprite("spr_blue_back"), new Vector2(0, 180), new Vector2(0, 0), true, false);
+            Background cloud = new Background(Sprites.GetSprite("bk_clouds"),new Vector2(0,0),new Vector2(1,0),true,false);
+            Backgrounds = new Background[] {blue,cloud};
+
+            Logo = Sprites.GetSprite("spr_cirrus_logo");
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            spriteBatch.GraphicsDevice.Clear(new Color(166,224,245,255));
+            spriteBatch.GraphicsDevice.Clear(new Color(166, 224, 245, 255));
+            BackgroundsDraw(spriteBatch,Vector2.One);
         }
 
         public override void DrawGui(SpriteBatch spriteBatch, GameTime gameTime)
         {
-
+            //Draw Logo
+            spriteBatch.Draw(Logo,new Vector2(Screen.GameWidth/2,Screen.GameHeight/4) - new Vector2(Logo.Width/2,Logo.Height/2),Color.White);
             menuPosScale = MathHelper.Lerp(menuPosScale,1.5f,0.08f);
 
             for(int i = 0; i < MenuItems.Count(); i++)
@@ -51,9 +60,10 @@ namespace Cirrus.Cirrus.Scenes
 
         public override void Update(GameTime gameTime)
         {
+            BackgroundsUpdate(gameTime, Vector2.One);
             SinTimer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
-
-            if(baseGame.input.GetKeyPressed(Keys.Up))
+            
+            if (baseGame.input.GetKeyPressed(Keys.Up))
             {
                 MenuPos--;
                 menuPosScale = 0.5f;

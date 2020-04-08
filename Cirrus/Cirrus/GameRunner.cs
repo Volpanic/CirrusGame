@@ -45,6 +45,7 @@ namespace Cirrus
             runningScene = new TitleScene(this);
 
             BasicFont = Content.Load<SpriteFont>(Path.Combine("Fonts", "fnt_basic"));
+
         }
 
         public void Unload()
@@ -64,7 +65,7 @@ namespace Cirrus
         {
             //Regular Draw
             GraphicsDevice.SetRenderTarget(ApplicationSurface);
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.LinearWrap);
 
             //Clear
             GraphicsDevice.Clear(Color.DarkGray);
