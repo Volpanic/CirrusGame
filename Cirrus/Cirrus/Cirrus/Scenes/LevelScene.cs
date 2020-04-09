@@ -17,7 +17,6 @@ namespace Cirrus.Cirrus.Scenes
 
         //Tiles
         public List<TilesetWorldLayer> TileSetList = new List<TilesetWorldLayer>();
-
         public TileSet CollisionSet { get { return GetCollisionSet(); } }
 
         public LevelScene(GameRunner _game, List<TilesetWorldLayer> _tileSetList = null) : base(_game)
@@ -47,12 +46,14 @@ namespace Cirrus.Cirrus.Scenes
         public override void Update(GameTime gameTime)
         {
             player.Update(gameTime);
-            
+            BackgroundsUpdate(gameTime, Vector2.Zero);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
+            ////////////////////////////////////////////////////////////////////////
             player.Draw(spriteBatch,gameTime);
+            BackgroundsDraw(spriteBatch,GetWorldSize(),Vector2.Zero);
 
             //Tiles
             foreach(TilesetWorldLayer tswl in TileSetList)
@@ -62,6 +63,18 @@ namespace Cirrus.Cirrus.Scenes
                     tswl.tileSet.DrawTileSet(spriteBatch);
                 }
                 
+            }
+        }
+
+        public Point GetWorldSize()
+        {
+            if(TileSetList.Count <= 0)
+            {
+                return new Point(Screen.GameHeight, Screen.GameWidth);
+            }
+            else
+            {
+                return new Point(TileSetList[0].tileSet.TileGridArray.GetLength(0)*16, TileSetList[0].tileSet.TileGridArray.GetLength(0) * 16);
             }
         }
 

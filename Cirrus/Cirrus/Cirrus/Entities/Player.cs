@@ -25,6 +25,7 @@ namespace Cirrus.Cirrus.Entities
             SpriteWidth = Sprite.Width;
             SpriteHeight = Sprite.Height;
             Origin = new Vector2(SpriteWidth/2,SpriteHeight/2);
+            Depth = .75f;
         }
 
         public override void Update(GameTime gameTime)

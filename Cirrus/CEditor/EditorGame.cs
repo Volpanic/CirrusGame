@@ -21,6 +21,8 @@ namespace CEditor
 
         public EditorMenu CurrentRunningMenu;
 
+        public SamplerState PointWrap = new SamplerState();
+
         public EditorGame()
         {
             Window.AllowUserResizing = true;
@@ -35,16 +37,21 @@ namespace CEditor
 
         protected override void Initialize()
         {
-
+            //Load Content
             string basePath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
-
             basePath = Path.GetFullPath(Path.Combine(basePath,@"..\"));
             Content.RootDirectory = Path.Combine(basePath, @"Cirrus\bin\DesktopGL\AnyCPU\Debug\Content");
 
             Sprites.Init(Content);
 
+            //
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
+
+            //Create Custom Sampler
+            PointWrap.Filter = TextureFilter.Point;
+            PointWrap.AddressU = TextureAddressMode.Wrap;
+            PointWrap.AddressV = TextureAddressMode.Wrap;
 
             CurrentRunningMenu = new StartMenu(_imGuiRenderer,this);
             spriteBatch = new SpriteBatch(GraphicsDevice);

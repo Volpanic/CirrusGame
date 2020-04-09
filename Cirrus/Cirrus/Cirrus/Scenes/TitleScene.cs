@@ -22,7 +22,7 @@ namespace Cirrus.Cirrus.Scenes
         public TitleScene(GameRunner _game) : base(_game)
         {
             Background blue = new Background(Sprites.GetSprite("spr_blue_back"), new Vector2(0, 180), new Vector2(0, 0), true, false);
-            Background cloud = new Background(Sprites.GetSprite("bk_clouds"),new Vector2(0,0),new Vector2(1,0),true,false);
+            Background cloud = new Background(Sprites.GetSprite("bk_clouds"),new Vector2(0,0),new Vector2(2,0),true,false);
             Backgrounds = new Background[] {blue,cloud};
 
             Logo = Sprites.GetSprite("spr_cirrus_logo");
@@ -31,7 +31,7 @@ namespace Cirrus.Cirrus.Scenes
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.GraphicsDevice.Clear(new Color(166, 224, 245, 255));
-            BackgroundsDraw(spriteBatch,Vector2.One);
+            BackgroundsDraw(spriteBatch,new Point(320,180),Vector2.One);
         }
 
         public override void DrawGui(SpriteBatch spriteBatch, GameTime gameTime)
@@ -46,14 +46,14 @@ namespace Cirrus.Cirrus.Scenes
                 {
                     Vector2 pos = new Vector2(Screen.GameWidth/2,Screen.GameHeight/2);
                     pos.Y += (16 * i) + MathMore.SinWave(-4,4,4,(float)i/4.0f,SinTimer);
-                    Drawing.DrawTextExt(spriteBatch,baseGame.BasicFont,MenuItems[i],pos,TextAlign.Center,TextAlign.Center,Vector2.One,Color.White);
+                    Drawing.DrawTextExtShadow(spriteBatch,baseGame.BasicFont,MenuItems[i],pos,TextAlign.Center,TextAlign.Center,Vector2.One,Color.White, new Color(24, 20, 37, 128));
                 }
                 else
                 {
                     Vector2 pos = new Vector2(Screen.GameWidth / 2, Screen.GameHeight / 2);
                     pos.Y += (16 * i) + MathMore.SinWave(-4, 4, 4, (float)i / 4.0f, SinTimer);
                     Vector2 Scale = (Vector2.One * MathMore.SinWave(0.9f,1.1f,4, (float)i / 4.0f,SinTimer)) * menuPosScale;
-                    Drawing.DrawTextExt(spriteBatch, baseGame.BasicFont, MenuItems[i], pos, TextAlign.Center, TextAlign.Center, Scale, Color.White);
+                    Drawing.DrawTextExtShadow(spriteBatch, baseGame.BasicFont, MenuItems[i], pos, TextAlign.Center, TextAlign.Center, Scale, Color.White, new Color(24, 20, 37, 128));
                 }
             }
         }

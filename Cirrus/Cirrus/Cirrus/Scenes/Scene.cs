@@ -23,22 +23,14 @@ namespace Cirrus.Cirrus.Scenes
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
         public abstract void DrawGui(SpriteBatch spriteBatch, GameTime gameTime);
 
-        public void BackgroundsDraw(SpriteBatch spriteBatch,Vector2 CameraPos)
+        public void BackgroundsDraw(SpriteBatch spriteBatch, Point WorldSize, Vector2 CameraPos)
         {
-            float depth = 0;
-            foreach(Background bk in Backgrounds)
-            {
-                bk.Draw(spriteBatch, depth, CameraPos);
-                depth += 0.01f;
-            }
+            Background.DrawBackgroundArray(ref Backgrounds, spriteBatch, WorldSize, CameraPos);
         }
 
         public void BackgroundsUpdate(GameTime gameTime,Vector2 CameraPos)
         {
-            foreach (Background bk in Backgrounds)
-            {
-                bk.Update(gameTime,CameraPos);
-            }
+            Background.UpdateBackgroundArray(ref Backgrounds, gameTime, CameraPos);
         }
     }
 }

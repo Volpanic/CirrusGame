@@ -37,7 +37,7 @@ namespace Cirrus.Cirrus.Backgrounds
             ScrollSpeed = _speed;
             xTile = _xt;
             yTile = _yt;
-            ParralxMulit = Vector2.One;
+            ParralxMulit = Vector2.Zero;
         }
 
         public Background(Texture2D _sprite, Vector2 _pos, Vector2 _speed)
@@ -48,7 +48,7 @@ namespace Cirrus.Cirrus.Backgrounds
             ScrollSpeed = _speed;
             xTile = false;
             yTile = false;
-            ParralxMulit = Vector2.One;
+            ParralxMulit = Vector2.Zero;
         }
 
         public void Update(GameTime gameTime, Vector2 ParralaxPosition)
@@ -58,17 +58,54 @@ namespace Cirrus.Cirrus.Backgrounds
             Position = basePos;
         }
 
-        public void Draw(SpriteBatch spriteBatch,float DrawDepth,Vector2 CameraPos)
+        public void Draw(SpriteBatch spriteBatch,float DrawDepth, Point WorldSize,Vector2 CameraPos)
         {
+            if (BackgroundSprite == null) return;
             if (!xTile && !yTile)
             {
-                spriteBatch.Draw(BackgroundSprite,Position, null, new Rectangle(0, 0, BackgroundSprite.Width, BackgroundSprite.Height), Vector2.Zero,0.0f,Vector2.One,Color.White,SpriteEffects.None,DrawDepth);
+                spriteBatch.Draw(BackgroundSprite,Position + (CameraPos * ParralxMulit), null, new Rectangle(0, 0, BackgroundSprite.Width, BackgroundSprite.Height), Vector2.Zero,0.0f,Vector2.One,Color.White,SpriteEffects.None,DrawDepth);
             }
             else
             {
-                Vector2 newpos;
-                newpos = new Vector2(Position.X % BackgroundSprite.Width, Position.Y % BackgroundSprite.Height);
-                spriteBatch.Draw(BackgroundSprite, newpos - new Vector2(BackgroundSprite.Width * 2, BackgroundSprite.Height * 2), null, new Rectangle(0, 0, BackgroundSprite.Width*4, BackgroundSprite.Height*4), Vector2.Zero, 0.0f, Vector2.One, Color.White, SpriteEffects.None, DrawDepth);
+                Vector2 newpos = Position + (CameraPos * ParralxMulit);
+                spriteBatch.Draw(BackgroundSprite, Vector2.Zero, null, new Rectangle((int)newpos.X, (int)newpos.Y, WorldSize.X,WorldSize.Y), Vector2.Zero, 0.0f, Vector2.One, Color.White, SpriteEffects.None, DrawDepth);
+            }
+        }
+
+        public static void UpdateBackgroundArray(ref Background[] backArray, GameTime gameTime, Vector2 CameraPos)
+        {
+            foreach (Background bk in backArray)
+            {
+                bk.Update(gameTime, CameraPos);
+            }
+        }
+
+        public static void DrawBackgroundArray(ref Background[] backArray,SpriteBatch spriteBatch, Point WorldSize, Vector2 CameraPos)
+        {
+            float depth = 0;
+            foreach (Background bk in backArray)
+            {
+                bk.Draw(spriteBatch, depth, WorldSize, CameraPos);
+                depth += 0.01f;
+            }
+        }
+
+        //List
+        public static void UpdateBackgroundArray(ref List<Background> backArray, GameTime gameTime, Vector2 CameraPos)
+        {
+            foreach (Background bk in backArray)
+            {
+                bk.Update(gameTime, CameraPos);
+            }
+        }
+
+        public static void DrawBackgroundArray(ref List<Background> backArray, SpriteBatch spriteBatch, Point WorldSize, Vector2 CameraPos)
+        {
+            float depth = 1;
+            foreach (Background bk in backArray)
+            {
+                bk.Draw(spriteBatch, depth, WorldSize, CameraPos);
+                depth -= 0.01f;
             }
         }
     }

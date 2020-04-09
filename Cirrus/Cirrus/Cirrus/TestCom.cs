@@ -16,7 +16,7 @@ namespace Cirrus.Cirrus
             Sprite = _sprite;
             SpriteWidth = 16;
             SpriteHeight = 16;
-
+            
             AnimationSpeed = 2;
         }
         

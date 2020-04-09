@@ -26,7 +26,7 @@ namespace Cirrus.Cirrus.Helpers
             spriteBatch.Draw(tex,new Vector2(rect.X,rect.Y),col);
         }
 
-        public static void DrawTextExt(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, TextAlign hori, TextAlign vert, Vector2 Scale, Color col)
+        public static void DrawTextExt(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, TextAlign hori, TextAlign vert, Vector2 Scale, Color col, float depth = 0.5f)
         {
             Vector2 size = font.MeasureString(text);
             Vector2 offset = new Vector2();
@@ -47,7 +47,13 @@ namespace Cirrus.Cirrus.Helpers
 
             offset *= Scale;
 
-            spriteBatch.DrawString(font, text, position - offset, col, 0.0f, Vector2.Zero, Scale, SpriteEffects.None, 0.0f);
+            spriteBatch.DrawString(font, text, position - offset, col, 0.0f, Vector2.Zero, Scale, SpriteEffects.None, depth);
+        }
+
+        public static void DrawTextExtShadow(SpriteBatch spriteBatch, SpriteFont font, string text, Vector2 position, TextAlign hori, TextAlign vert, Vector2 Scale, Color col,Color shadowCol, float depth = 0.5f)
+        {
+            DrawTextExt(spriteBatch, font, text, position + new Vector2(0, 2), hori, vert, Scale, shadowCol,depth - 0.01f);
+            DrawTextExt(spriteBatch, font, text, position, hori, vert, Scale, col,depth);
         }
     }
 

@@ -14,6 +14,7 @@ using Cirrus.Cirrus.Tiles;
 using Cirrus.Cirrus.Helpers;
 using Cirrus.Cirrus.Scenes;
 using Editor.Other;
+using Cirrus.Cirrus.Backgrounds;
 
 namespace Editor.EditorMenus
 {
@@ -94,6 +95,7 @@ namespace Editor.EditorMenus
                 {
                     gameRunner = new GameRunner(_game._graphics,_game.spriteBatch,_game.Content);
                     LevelScene ls = new LevelScene(gameRunner, TileLayers);
+                    ls.Backgrounds = BackgroundList.ToArray();
                     gameRunner.CurrentScene = ls;
 
                     RunningGame = true;
@@ -106,7 +108,14 @@ namespace Editor.EditorMenus
             {
                 TilePallateWindow();
                 //Tile Layers window
-                TileLayerWindow();
+                if (ImGui.BeginTabBar("Layers"))
+                {
+                    TileLayerWindow();
+                    BackgroundTab();
+                    ImGui.EndTabBar();
+                }
+
+
                 GameWindow();
             }
             else
@@ -114,7 +123,7 @@ namespace Editor.EditorMenus
                 ImGui.Begin("GameWindow",ref RunningGame,ImGuiWindowFlags.AlwaysAutoResize);
 
                 ImGui.Image(levelTexture,new Num.Vector2(Screen.GameWidth,Screen.GameHeight)*3);
-
+               
                 ImGui.End();
             }
         }
@@ -123,6 +132,7 @@ namespace Editor.EditorMenus
         int LayerListPosition = 0;
         string newTileName = "Temp";
 
+        #region //Tile Pallate Window
         public Num.Vector2 tilePallateMousePos;
         public int tileSetZoom = 2;
         public Point[,] SelectedTileBrush = new Point[1, 1];
@@ -201,12 +211,15 @@ namespace Editor.EditorMenus
                 ImGui.End();
             }
         }
+        #endregion
 
+        #region //TileLayerWindow
         int tileLayerSelectedSprite = 0;
         public void TileLayerWindow()
         {
+            if(ImGui.BeginTabItem("Layers"))
             {
-                ImGui.Begin("Layers");
+                
                 if (ImGui.Button("Add New Layer")) NewLayerWindow = true;
 
                 //Select layer to edit
@@ -240,19 +253,18 @@ namespace Editor.EditorMenus
                 {
                     TilesetWorldLayer tswl = TileLayers[i];
 
-                    if(ImGui.TreeNode(tswl.Name))
+                    if(ImGui.TreeNodeEx(tswl.Name))
                     {
                         ImGui.InputText("Name", ref tswl.Name,32,i == 0? ImGuiInputTextFlags.ReadOnly : ImGuiInputTextFlags.None);
                         ImGui.Checkbox("Visible",ref tswl.Visible);
                         ImGui.Checkbox("Locked", ref tswl.Locked);
                         ImGui.TreePop();
                     }
-                    
 
                     TileLayers[i] = tswl;
                 }
 
-                ImGui.End();
+                ImGui.EndTabItem();
             }
 
             if (NewLayerWindow)
@@ -263,7 +275,7 @@ namespace Editor.EditorMenus
                 //Put Tile set stuff here later
                 ImGui.InputText("Layer Name", ref newTileName, 24,ImGuiInputTextFlags.CharsNoBlank);
 
-                if (ImGui.BeginCombo("Sprite", Sprites.SpriteList.Keys[0]))
+                if (ImGui.BeginCombo("Sprite", Sprites.SpriteList.Keys[tileLayerSelectedSprite]))
                 {
                     for (int i = 0; i < Sprites.SpriteList.Count; i++)
                     {
@@ -271,7 +283,6 @@ namespace Editor.EditorMenus
                         if (ImGui.Selectable(Sprites.SpriteList.Keys[i], selected))
                         {
                             tileLayerSelectedSprite = i;
-                            
                         }
 
                         if (selected)
@@ -294,6 +305,90 @@ namespace Editor.EditorMenus
 
 
                 ImGui.End();
+            }
+        }
+        #endregion
+
+        public List<Background> BackgroundList = new List<Background>();
+        public bool PlayBackgroundUpdate = false;
+        public bool MouseIsParralaxPos = false;
+        public void BackgroundTab()
+        {
+            if (ImGui.BeginTabItem("Backgrounds"))
+            {
+                
+                if(ImGui.Button("Add new Background")) BackgroundList.Add(new Background(Sprites.GetSprite("spr_cursor"),Vector2.Zero,Vector2.Zero));
+                
+                ImGui.SameLine();
+                //Update
+                if(PlayBackgroundUpdate)
+                {
+                    if(ImGui.Button("Stop Background"))
+                    {
+                        PlayBackgroundUpdate = false;
+                        foreach (Background bk in BackgroundList)
+                        {
+                            bk.Position = Vector2.Zero;
+                        }
+                    }
+                }
+                else
+                {
+                    if (ImGui.Button("Play Background"))
+                    {
+                        PlayBackgroundUpdate = true;
+                    }
+                }
+                ImGui.SameLine();
+                ImGui.Checkbox("Mouse Parralax", ref MouseIsParralaxPos);
+
+                ImGui.Separator();
+
+                for (int i = 0; i < BackgroundList.Count; i++)
+                {
+                    if(ImGui.TreeNode(BackgroundList[i].BackgroundSprite.Name))
+                    {
+                        Background bk = BackgroundList[i];
+
+                        //Draw Sprite List
+                        if(ImGui.BeginCombo("Background Sprite",bk.BackgroundSprite.Name))
+                        {
+                            for (int b = 0; b < Sprites.SpriteList.Count; b++)
+                            {
+                                if (ImGui.Selectable(Sprites.SpriteList.Keys[b]))
+                                {
+                                    bk.BackgroundSprite = Sprites.SpriteList.Values[b];
+                                }
+                            }
+                            ImGui.EndCombo();
+                        }
+                        ImGui.Checkbox("xTile",ref bk.xTile);
+                        ImGui.Checkbox("yTile", ref bk.yTile);
+
+                        //Position Speed
+                        Num.Vector2 pos = new Num.Vector2(bk.Position.X, bk.Position.Y);
+                        ImGui.SliderFloat2("Position", ref pos, 0, 0);
+                        bk.Position = new Vector2(pos.X, pos.Y);
+
+                        //Scroll Speed
+                        Num.Vector2 spd = new Num.Vector2(bk.ScrollSpeed.X, bk.ScrollSpeed.Y);
+                        ImGui.SliderFloat2("Speed",ref spd, -5,5);
+                        bk.ScrollSpeed = new Vector2(spd.X, spd.Y);
+
+                        //Parralax Speed
+                        Num.Vector2 parra = new Num.Vector2(bk.ParralxMulit.X, bk.ParralxMulit.Y);
+                        ImGui.SliderFloat2("Parralax", ref parra, -2, 2);
+                        bk.ParralxMulit = new Vector2(parra.X, parra.Y);
+
+
+
+                        BackgroundList[i] = bk;
+
+                        ImGui.TreePop();
+                    }
+                }
+
+                ImGui.EndTabItem();
             }
         }
 
@@ -468,7 +563,9 @@ namespace Editor.EditorMenus
                 _game.GraphicsDevice.SetRenderTarget(levelRenderTarget);
                 _game.GraphicsDevice.Clear(MapClearCol);
 
-                spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
+                spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, _game.PointWrap);
+ 
+                Background.DrawBackgroundArray(ref BackgroundList,spriteBatch,new Point(MapSize.X*16,MapSize.Y*16), MouseIsParralaxPos ? new Vector2(editorMousePos.X, editorMousePos.Y) : Vector2.Zero);
 
                 foreach (TilesetWorldLayer tswl in TileLayers)
                 {
@@ -497,6 +594,13 @@ namespace Editor.EditorMenus
             if(RunningGame) // GameRunning
             {
                 gameRunner.Update(gameTime);
+            }
+            else
+            {
+                if(PlayBackgroundUpdate)
+                {
+                    Background.UpdateBackgroundArray(ref BackgroundList,gameTime,MouseIsParralaxPos? new Vector2(editorMousePos.X, editorMousePos.Y) : Vector2.Zero);
+                }
             }
         }
     }

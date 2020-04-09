@@ -20,16 +20,16 @@ namespace Cirrus
         //Scenes
         private Scene runningScene;
         public Scene CurrentScene { get { return runningScene; } set { runningScene = value; } }
-
         public Screen screen;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         ContentManager Content;
-        public Input input = new Input();
         GraphicsDevice GraphicsDevice { get{return graphics.GraphicsDevice; } }
 
         public SpriteFont BasicFont;
+        public SamplerState PointWrap = new SamplerState();
+        public Input input = new Input();
 
         public GameRunner(GraphicsDeviceManager _graphics,SpriteBatch _spriteBatch,ContentManager _content)
         {
@@ -43,6 +43,11 @@ namespace Cirrus
             GuiSurface = new RenderTarget2D(GraphicsDevice, Screen.GameWidth, Screen.GameHeight);
 
             runningScene = new TitleScene(this);
+
+            //Create Custom Sampler
+            PointWrap.Filter = TextureFilter.Point;
+            PointWrap.AddressU = TextureAddressMode.Wrap;
+            PointWrap.AddressV = TextureAddressMode.Wrap;
 
             BasicFont = Content.Load<SpriteFont>(Path.Combine("Fonts", "fnt_basic"));
 
@@ -65,7 +70,7 @@ namespace Cirrus
         {
             //Regular Draw
             GraphicsDevice.SetRenderTarget(ApplicationSurface);
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.LinearWrap);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, PointWrap);
 
             //Clear
             GraphicsDevice.Clear(Color.DarkGray);
@@ -76,7 +81,7 @@ namespace Cirrus
 
             //GUI Draw
             GraphicsDevice.SetRenderTarget(GuiSurface);
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, PointWrap);
 
             runningScene.DrawGui(spriteBatch,gameTime);
 
